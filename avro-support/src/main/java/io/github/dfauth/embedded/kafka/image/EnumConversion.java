@@ -31,7 +31,13 @@ public class EnumConversion<E extends Enum<E>> extends Conversion<E> {
 
     @Override
     public E fromInt(Integer value, Schema schema, LogicalType type) {
-        return valueStream().findFirst().orElseThrow();
+        return valueStream()
+                .filter(e -> e.ordinal() == value)
+                .findFirst()
+                .orElseGet(() -> valueStream()
+                        .filter(e -> "UNKNOWN".equalsIgnoreCase(e.name()))
+                        .findFirst()
+                        .orElseThrow());
     }
 
     private Stream<E> valueStream() {
