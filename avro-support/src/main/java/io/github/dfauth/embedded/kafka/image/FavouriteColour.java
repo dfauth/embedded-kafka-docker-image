@@ -14,14 +14,14 @@ public enum FavouriteColour {
     public static class Conversion extends EnumConversion<FavouriteColour> {
 
         public Conversion() {
-            super(FavouriteColour.class, FavouriteColour.class.getName());
+            super(FavouriteColour.class);
         }
     }
 
     public static class LogicalTypeFactory extends EnumLogicalTypeFactory {
 
         public LogicalTypeFactory() {
-            super(FavouriteColour.class.getName());
+            super(FavouriteColour.class);
         }
     }
 }

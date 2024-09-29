@@ -8,8 +8,8 @@ public class EnumLogicalTypeFactory implements LogicalTypes.LogicalTypeFactory {
 
     private String name;
 
-    public EnumLogicalTypeFactory(String name) {
-        this.name = name;
+    public <E extends Enum<E>> EnumLogicalTypeFactory(Class<E> classOfE) {
+        this.name = classOfE.getName();
     }
 
     @Override

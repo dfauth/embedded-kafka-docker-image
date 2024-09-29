@@ -14,9 +14,9 @@ public class EnumConversion<E extends Enum<E>> extends Conversion<E> {
     private final Class<E> classOfE;
     private final String name;
 
-    public EnumConversion(Class<E> classOfE, String name) {
+    public EnumConversion(Class<E> classOfE) {
         this.classOfE = classOfE;
-        this.name = name;
+        this.name = classOfE.getName();
     }
 
     @Override
