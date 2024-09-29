@@ -91,12 +91,12 @@
                             <stringType>String</stringType>
                             <customConversions>
                                 <conversion>
-                                    io.github.dfauth.embedded.kafka.image.FavouriteColour$Conversion
+                                    io.github.dfauth.embedded.kafka.image.FavouriteColour$LogicalTypeFactoryAndConversion
                                 </conversion>
                             </customConversions>
                             <customLogicalTypeFactories>
                                 <customLogicalTypeFactory>
-                                    io.github.dfauth.embedded.kafka.image.FavouriteColour$LogicalTypeFactory
+                                    io.github.dfauth.embedded.kafka.image.FavouriteColour$LogicalTypeFactoryAndConversion
                                 </customLogicalTypeFactory>
                             </customLogicalTypeFactories>
                         </configuration>

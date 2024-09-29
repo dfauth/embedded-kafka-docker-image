@@ -1,7 +1,5 @@
 package io.github.dfauth.embedded.kafka.image;
 
-import lombok.extern.slf4j.Slf4j;
-
 public enum FavouriteColour {
     UNKNOWN,
     RED,
@@ -10,17 +8,9 @@ public enum FavouriteColour {
     GREEN,
     PURPLE;
 
-    @Slf4j
-    public static class Conversion extends EnumConversion<FavouriteColour> {
+    public static class LogicalTypeFactoryAndConversion extends EnumLogicalTypeFactoryAndConversion<FavouriteColour> {
 
-        public Conversion() {
-            super(FavouriteColour.class);
-        }
-    }
-
-    public static class LogicalTypeFactory extends EnumLogicalTypeFactory {
-
-        public LogicalTypeFactory() {
+        public LogicalTypeFactoryAndConversion() {
             super(FavouriteColour.class);
         }
     }

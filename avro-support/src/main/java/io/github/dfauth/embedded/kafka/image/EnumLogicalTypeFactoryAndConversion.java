@@ -3,20 +3,29 @@ package io.github.dfauth.embedded.kafka.image;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.Conversion;
 import org.apache.avro.LogicalType;
+import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.stream.Stream;
 
 @Slf4j
-public class EnumConversion<E extends Enum<E>> extends Conversion<E> {
+public class EnumLogicalTypeFactoryAndConversion<E extends Enum<E>> extends Conversion<E> implements LogicalTypes.LogicalTypeFactory {
 
-    private final Class<E> classOfE;
-    private final String name;
+    private Class<E> classOfE;
 
-    public EnumConversion(Class<E> classOfE) {
+    public EnumLogicalTypeFactoryAndConversion(Class<E> classOfE) {
         this.classOfE = classOfE;
-        this.name = classOfE.getName();
+    }
+
+    @Override
+    public LogicalType fromSchema(Schema schema) {
+        return new EnumLogicalType(classOfE.getName());
+    }
+
+    @Override
+    public String getTypeName() {
+        return classOfE.getName();
     }
 
     @Override
@@ -26,7 +35,7 @@ public class EnumConversion<E extends Enum<E>> extends Conversion<E> {
 
     @Override
     public String getLogicalTypeName() {
-        return name;
+        return classOfE.getName();
     }
 
     @Override
