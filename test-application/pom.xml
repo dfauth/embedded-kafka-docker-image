@@ -89,6 +89,7 @@
                         <configuration>
                             <sourceDirectory>${project.basedir}/src/main/avro/</sourceDirectory>
                             <stringType>String</stringType>
+                            <templateDirectory>${project.basedir}/src/main/avro-templates/</templateDirectory>
                             <customConversions>
                                 <conversion>
                                     io.github.dfauth.embedded.kafka.image.FavouriteColour$LogicalTypeFactoryAndConversion

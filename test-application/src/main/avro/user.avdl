@@ -1,4 +1,5 @@
 @namespace("io.github.dfauth.embedded.kafka.image.test")
+
 protocol UserProtocol {
 
   record User {

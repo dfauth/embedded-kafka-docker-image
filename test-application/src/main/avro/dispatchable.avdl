@@ -1,0 +1,18 @@
+@namespace("io.github.dfauth.embedded.kafka.image.dispatchable")
+
+protocol DispatchableEventProtocol {
+
+  import idl "user.avdl";
+
+  record UpdateEvent {
+    io.github.dfauth.embedded.kafka.image.test.User user;
+  }
+
+  record CreateEvent {
+    io.github.dfauth.embedded.kafka.image.test.User user;
+  }
+
+  record DeleteEvent {
+    long userId;
+  }
+}
