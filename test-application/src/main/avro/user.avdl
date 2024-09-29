@@ -1,0 +1,9 @@
+@namespace("io.github.dfauth.embedded.kafka.image.test")
+protocol UserProtocol {
+
+  record User {
+    long id;
+    string userId;
+    @logicalType("favourite-colour") int favoriteColor = 0;
+  }
+}

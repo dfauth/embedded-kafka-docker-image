@@ -6,9 +6,8 @@ services:
   kafka:
     image: embedded-kafka-image:0.0.1-SNAPSHOT
     ports:
-      - 2181:2181
-      - "9092:9092"
-      - 8090:8090
+      - 9092:9092
+      - 443:443
     volumes:
       - ./local/path:/container/path
     environment:

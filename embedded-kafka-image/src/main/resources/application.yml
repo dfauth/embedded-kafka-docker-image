@@ -3,4 +3,10 @@ spring:
     name: embedded-kafka-image
 
 server:
-  port: 8090
+  port: 443
+  ssl:
+    key-store: classpath:keystore.jks
+    key-store-type: jks
+    key-store-password: password
+    key-password: password
+    key-alias: mykey

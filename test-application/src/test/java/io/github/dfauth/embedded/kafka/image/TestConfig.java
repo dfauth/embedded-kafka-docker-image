@@ -21,35 +21,8 @@ import java.util.concurrent.CompletableFuture;
 public class TestConfig {
 
     @Bean
-    public ConsumerFactory<String, String> consumerFactory() {
-
-        // Creating a Map of string-object pairs
-        Map<String, Object> config = new HashMap<>();
-
-        // Adding the Configuration
-        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
-        config.put(ConsumerConfig.GROUP_ID_CONFIG, "group_id");
-        config.put( ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        config.put( ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        return new DefaultKafkaConsumerFactory<>(config);
-    }
-
-    // Creating a Listener
-    @Bean
-    public KafkaListenerContainerFactory kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
-        return factory;
-    }
-
-    @Bean
-    public CompletableFuture<String> receiver(Receiver receiver) {
-        return receiver.getF();
-    }
-
-    @Bean
-    public Receiver receiverBean() {
-        return new Receiver();
+    public Receiver<String> receiverBean() {
+        return new Receiver<>();
     }
 
 }

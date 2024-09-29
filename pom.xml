@@ -15,8 +15,9 @@
   </parent>
 
   <modules>
-    <module>embedded-kafka-image</module>
+    <module>avro-support</module>
     <module>test-application</module>
+    <module>embedded-kafka-image</module>
   </modules>
 
   <properties>

@@ -14,12 +14,12 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @Service
 @Getter
-public class Receiver implements ConsumerSeekAware {
+public class Receiver<T> implements ConsumerSeekAware {
 
-    private final CompletableFuture<String> f = new CompletableFuture<>();
+    private final CompletableFuture<T> f = new CompletableFuture<>();
 
     @KafkaListener(topics = {"test"})
-    public void inMessage(ConsumerRecord<?, String> consumerRecord) {
+    public void inMessage(ConsumerRecord<?, T> consumerRecord) {
         f.complete(consumerRecord.value());
     }
 
