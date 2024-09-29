@@ -1,0 +1,24 @@
+networks:
+  bgypsy-network:
+    name: bgypsy
+
+services:
+  kafka:
+    image: embedded-kafka-image:0.0.1-SNAPSHOT
+    ports:
+      - 2181:2181
+      - "9092:9092"
+      - 8090:8090
+    volumes:
+      - ./local/path:/container/path
+    environment:
+      io.github.dfauth.embedded.kafka.topics: test
+    networks:
+      - bgypsy-network
+    healthcheck:
+      test: ["CMD", "../../bin-kafkatopics", "--list", "--bootstrap-server", "kafka:9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+
