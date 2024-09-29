@@ -4,7 +4,7 @@ import io.github.dfauth.embedded.kafka.image.test.User;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-import static io.github.dfauth.embedded.kafka.image.FavouriteColourEnum.RED;
+import static io.github.dfauth.embedded.kafka.image.FavouriteColour.RED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
@@ -18,7 +18,7 @@ public class UserTestCase {
                 .setFavoriteColor(RED)
                 .build();
 
-        FavouriteColourEnum colour = user.getFavoriteColor();
+        FavouriteColour colour = user.getFavoriteColor();
         assertEquals(RED, colour);
     }
 }
