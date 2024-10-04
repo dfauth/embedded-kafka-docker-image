@@ -8,6 +8,7 @@ services:
     ports:
       - 9092:9092
       - 443:443
+      - 8090:8090
     volumes:
       - ./local/path:/container/path
     environment:
