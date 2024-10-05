@@ -9,10 +9,14 @@ services:
       - 9092:9092
       - 443:443
       - 8090:8090
+      - 5005:5005
     volumes:
       - ./local/path:/container/path
     environment:
       io.github.dfauth.embedded.kafka.topics: test
+      _JAVA_OPTIONS: >
+        -Xdebug
+        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     networks:
       - bgypsy-network
     healthcheck:

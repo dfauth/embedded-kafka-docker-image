@@ -17,10 +17,13 @@ public class ApicurioAvroConfig {
     @Value("${apicurio.registry.url}")
     private String url;
 
+    @Value("${apicurio.registry.auto-register:true}")
+    private Boolean autoRegister;
+
     @Bean
     @Qualifier("serde.config")
     public Map<String, Object> serdeConfig() {
-        return Map.of("apicurio.registry.url",url);
+        return Map.of("apicurio.registry.url",url, "apicurio.registry.auto-register",autoRegister);
     }
 
     @Bean
