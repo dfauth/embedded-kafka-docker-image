@@ -9,10 +9,11 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -41,21 +42,30 @@ public class SchemaRegistryController {
             @RequestParam("artifactType") String artifactType,
             @RequestBody String schema) {
         log.info("WOOZ search: {}",schema);
-        List<SearchedVersion> result = schemas.values().stream().filter(s -> s.equals(schema)).findFirst().map(SearchedVersion::new).map(List::of).orElse(List.of());
+        List<SearchedVersion> result = search(schema).map(Map.Entry::getValue).map(SearchedVersion::new).map(List::of).orElse(List.of());
         return new ResponseEntity(new VersionSearchResults(result.size(), result), OK);
+    }
+
+    private Optional<Map.Entry<Integer, String>> search(
+            @RequestBody String schema) {
+        return schemas.entrySet().stream().filter(s -> s.getValue().equals(schema)).findFirst();
     }
 
     // groups/default/artifacts?ifExists=FIND_OR_CREATE_VERSION&canonical=false
     @PostMapping(value = "groups/{groupId}/artifacts", consumes = {"application/json"}, produces = {"application/json"})
-    public ResponseEntity<VersionMetadata> register(
+    public ResponseEntity<CreateArtifactResponse> register(
             @PathVariable("groupId") String groupId,
             @RequestParam("ifExists") Action ifExists,
             @RequestParam("canonical") Boolean canonical,
-            @RequestBody Thingy thingy) {
-        log.info("WOOZ register: {}",thingy);
-        int cnt = schemaCnt++;
-        schemas.put(cnt, thingy.getFirstVersion().getContent().getContent());
-        return new ResponseEntity<>(new VersionMetadata(cnt, groupId), OK);
+            @RequestBody CreateArtifact createArtifact) {
+        log.info("WOOZ register: {}", createArtifact);
+        return search(createArtifact.getFirstVersion().getContent().getContent()).map(e -> {
+            return new ResponseEntity<>(new CreateArtifactResponse(e.getKey(), groupId), OK);
+        }).orElseGet(() -> {
+            int cnt = schemaCnt++;
+            schemas.put(cnt, createArtifact.getFirstVersion().getContent().getContent());
+            return new ResponseEntity<>(new CreateArtifactResponse(cnt, groupId), OK);
+        });
     }
 
     // {artifactId=test-value,
@@ -73,13 +83,54 @@ public class SchemaRegistryController {
     // }
     @Data
     @AllArgsConstructor
-    public static class VersionMetadata {
+    public static class CreateArtifactResponse {
+        private final ArtifactMetaData artifact;
+        private final VersionMetaData version;
+
+        public CreateArtifactResponse(int id, String groupId) {
+            this(new ArtifactMetaData(groupId), new VersionMetaData(id, groupId));
+        }
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class ArtifactMetaData {
+        private final String name;
+        private final String description;
+        private final String owner;
+        private final OffsetDateTime createdOn;
+        private final String modifiedBy;
+        private final OffsetDateTime modifiedOn;
+        private final ArtifactType artifactType;
+        private final String labels;
+        private final String groupId;
+        private final String artifactId;
+
+        public ArtifactMetaData(String groupId) {
+            this(
+                    "name",
+                    "description",
+                    "owner",
+                    OffsetDateTime.now(),
+                    "owner",
+                    OffsetDateTime.now(),
+                    ArtifactType.AVRO,
+                    "labels",
+                    groupId,
+                    "artifactId"
+            );
+        }
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class VersionMetaData {
 
         private final String version;
         private final String name;
         private final String description;
         private final String owner;
-        private final LocalDateTime createdOn;
+        private final OffsetDateTime createdOn;
         private final ArtifactType artifactType;
         private final Long globalId;
         private final VersionState state;
@@ -87,21 +138,30 @@ public class SchemaRegistryController {
         private final String groupId;
         private final Long contentId;
         private final String artifactId;
+        private final Map<String, Object> additionalData;
 
-        public VersionMetadata(int i, String groupId) {
+        /**
+         private String artifactType;
+         private OffsetDateTime createdOn;
+         private Labels labels;
+         private VersionState state;
+         */
+
+        public VersionMetaData(int i, String groupId) {
             this(
                     String.valueOf(i),
                     "name",
                     "description",
                     "owner",
-                    LocalDateTime.now(),
+                    OffsetDateTime.now(),
                     ArtifactType.AVRO,
                     0l,
                     VersionState.ENABLED,
                     "labels",
                     groupId,
                     0l,
-                    "artifactId"
+                    "artifactId",
+                    Map.of()
                     );
         }
     }
@@ -131,7 +191,7 @@ public class SchemaRegistryController {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class Thingy {
+    public static class CreateArtifact {
         private String artifactId;
         private ArtifactType artifactType;
         private Content firstVersion;
