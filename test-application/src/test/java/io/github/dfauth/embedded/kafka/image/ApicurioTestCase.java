@@ -1,21 +1,17 @@
 package io.github.dfauth.embedded.kafka.image;
 
-import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
+import io.github.dfauth.embedded.kafka.image.test.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -34,22 +30,13 @@ public class ApicurioTestCase {
     @Value("${apicurio.registry.url}")
     private String url;
 
-    @Autowired
-    private AvroKafkaSerializer avroSerializer;
-
-    @Autowired
-    private CompletableFuture<String> f;
-
-    private Map<String, Object> producerProps = Map.of(
-            "bootstrap.servers", "127.0.0.1:9092"
-    );
-
-    private ProducerFactory<String, SpecificRecordBase> producerFactory = () -> new KafkaProducer<>(producerProps,
-            new StringSerializer(),
-            avroSerializer);
-
-    private KafkaTemplate<String, SpecificRecordBase> kafkaTemplate = new KafkaTemplate<>(producerFactory);
     private String topic = "test";
+
+    @Autowired
+    private CompletableFuture<User> f;
+
+    @Autowired
+    private KafkaTemplate<String, SpecificRecordBase> kafkaTemplate;
 
     @Test
 //    @Disabled
@@ -69,7 +56,8 @@ public class ApicurioTestCase {
                         return null;
                     }))
                             ;
-            log.info("received message: {}",f.get(1000, TimeUnit.MILLISECONDS));
+            User u = f.get(1000, TimeUnit.MILLISECONDS);
+            log.info("received message: {}",u);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             log.error(e.getMessage(), e);
             throw new RuntimeException(e);

@@ -2,13 +2,19 @@ package io.github.dfauth.embedded.kafka.image;
 
 import io.apicurio.registry.serde.avro.AvroKafkaDeserializer;
 import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
+import io.github.dfauth.embedded.kafka.image.test.User;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.serialization.Deserializer;
+import org.apache.kafka.common.serialization.Serializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 @Slf4j
 @Configuration()
@@ -21,12 +27,31 @@ public class ApicurioAvroConfig {
     private Boolean autoRegister;
 
     @Bean
+    @Qualifier("key.serializer")
+    public Serializer<String> keySerializer() {
+        return new StringSerializer();
+    }
+
+    @Bean
+    @Qualifier("value.deserializer")
+    public Supplier<Deserializer<User>> valueDeserializer(AvroKafkaDeserializer<User> deserializer) {
+        return () -> deserializer;
+    }
+
+    @Bean
+    @Qualifier("key.deserializer")
+    public Supplier<Deserializer<String>> keyDeserializer() {
+        return StringDeserializer::new;
+    }
+
+    @Bean
     @Qualifier("serde.config")
     public Map<String, Object> serdeConfig() {
         return Map.of("apicurio.registry.url",url, "apicurio.registry.auto-register",autoRegister);
     }
 
     @Bean
+    @Qualifier("value.serializer")
     public AvroKafkaSerializer avroSerializer(@Qualifier("serde.config") Map<String, Object> config) {
         AvroKafkaSerializer serializer = new AvroKafkaSerializer();
         serializer.configure((Map<String, ?>) config.get("serdeConfig"), false);
@@ -41,7 +66,7 @@ public class ApicurioAvroConfig {
     }
 
     @Bean
-    public Receiver<io.github.dfauth.embedded.kafka.image.test.User> receiverBean() {
+    public Receiver<Integer,io.github.dfauth.embedded.kafka.image.test.User> receiverBean() {
         return new Receiver<>();
     }
 

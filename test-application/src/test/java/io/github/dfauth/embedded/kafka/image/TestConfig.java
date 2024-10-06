@@ -1,19 +1,16 @@
 package io.github.dfauth.embedded.kafka.image;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.Deserializer;
+import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
-import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.config.KafkaListenerContainerFactory;
-import org.springframework.kafka.core.ConsumerFactory;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 @Slf4j
 @EnableKafka
@@ -21,7 +18,31 @@ import java.util.concurrent.CompletableFuture;
 public class TestConfig {
 
     @Bean
-    public Receiver<String> receiverBean() {
+    @Qualifier("value.serializer")
+    public Serializer<String> valueSerializer() {
+        return new StringSerializer();
+    }
+
+    @Bean
+    @Qualifier("key.serializer")
+    public Serializer<String> keySerializer() {
+        return new StringSerializer();
+    }
+
+    @Bean
+    @Qualifier("value.deserializer")
+    public Supplier<Deserializer<String>> valueDeserializer() {
+        return StringDeserializer::new;
+    }
+
+    @Bean
+    @Qualifier("key.deserializer")
+    public Supplier<Deserializer<String>> keyDeserializer() {
+        return StringDeserializer::new;
+    }
+
+    @Bean
+    public Receiver<String,String> receiverBean() {
         return new Receiver<>();
     }
 

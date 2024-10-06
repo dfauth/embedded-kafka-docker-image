@@ -10,7 +10,6 @@ import org.springframework.kafka.test.EmbeddedKafkaZKBroker;
 
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Stream;
 
 @Slf4j
 @Configuration
@@ -27,7 +26,7 @@ public class KafkaConfig {
     @Value("${io.github.dfauth.embedded.kafka.partition.count:1}")
     private int partitions;
     @Value("${io.github.dfauth.embedded.kafka.topics:TOPIC}")
-    private String topics;
+    private String[] topics;
     @Bean
     @Qualifier("brokerProperties")
     public Properties brokerProperties() {
@@ -40,9 +39,7 @@ public class KafkaConfig {
     @Bean
     public EmbeddedKafkaBroker kafkaBroker(@Qualifier("brokerProperties") Map<String, String> brokerProperties) {
         try {
-            String[] topix = Stream.of(topics.split(",")).map(String::trim).toArray(String[]::new);
-            Stream.of(topix).forEach(t -> log.info("topic: "+t));
-            EmbeddedKafkaZKBroker broker = new EmbeddedKafkaZKBroker(brokers, controlledShutdown, partitions, topix);
+            EmbeddedKafkaZKBroker broker = new EmbeddedKafkaZKBroker(brokers, controlledShutdown, partitions, topics);
             broker.brokerProperties(brokerProperties);
             return broker;
         } catch (Exception e) {
