@@ -1,4 +1,4 @@
-package io.github.dfauth.embedded.kafka.image;
+package io.github.dfauth.embedded.kafka;
 
 public enum FavouriteColour {
     UNKNOWN,

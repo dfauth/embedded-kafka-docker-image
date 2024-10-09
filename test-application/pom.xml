@@ -93,12 +93,12 @@
                             <templateDirectory>${project.basedir}/src/main/avro-templates/</templateDirectory>
                             <customConversions>
                                 <conversion>
-                                    io.github.dfauth.embedded.kafka.image.FavouriteColour$LogicalTypeFactoryAndConversion
+                                    io.github.dfauth.embedded.kafka.FavouriteColour$LogicalTypeFactoryAndConversion
                                 </conversion>
                             </customConversions>
                             <customLogicalTypeFactories>
                                 <customLogicalTypeFactory>
-                                    io.github.dfauth.embedded.kafka.image.FavouriteColour$LogicalTypeFactoryAndConversion
+                                    io.github.dfauth.embedded.kafka.FavouriteColour$LogicalTypeFactoryAndConversion
                                 </customLogicalTypeFactory>
                             </customLogicalTypeFactories>
                         </configuration>

@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 @Slf4j
@@ -46,4 +47,8 @@ public class TestConfig {
         return new Receiver<>();
     }
 
+    @Bean
+    public <K,V> CompletableFuture<V> receiver(Receiver<K,V> receiver) {
+        return receiver.getF();
+    }
 }

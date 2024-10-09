@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 @Slf4j
@@ -70,4 +71,8 @@ public class ApicurioAvroConfig {
         return new Receiver<>();
     }
 
+    @Bean
+    public <K,V> CompletableFuture<V> receiver(Receiver<K,V> receiver) {
+        return receiver.getF();
+    }
 }

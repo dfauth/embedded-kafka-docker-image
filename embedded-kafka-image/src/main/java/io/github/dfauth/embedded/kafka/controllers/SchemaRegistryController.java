@@ -140,13 +140,6 @@ public class SchemaRegistryController {
         private final String artifactId;
         private final Map<String, Object> additionalData;
 
-        /**
-         private String artifactType;
-         private OffsetDateTime createdOn;
-         private Labels labels;
-         private VersionState state;
-         */
-
         public VersionMetaData(int i, String groupId) {
             this(
                     String.valueOf(i),
