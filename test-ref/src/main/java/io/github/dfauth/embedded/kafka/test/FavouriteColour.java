@@ -1,4 +1,6 @@
-package io.github.dfauth.embedded.kafka;
+package io.github.dfauth.embedded.kafka.test;
+
+import io.github.dfauth.embedded.kafka.EnumLogicalTypeFactoryAndConversion;
 
 public enum FavouriteColour {
     UNKNOWN,

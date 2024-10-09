@@ -18,7 +18,7 @@
     <dependencies>
         <dependency>
             <groupId>io.github.dfauth.embedded.kafka.image</groupId>
-            <artifactId>avro-support</artifactId>
+            <artifactId>test-ref</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -93,12 +93,12 @@
                             <templateDirectory>${project.basedir}/src/main/avro-templates/</templateDirectory>
                             <customConversions>
                                 <conversion>
-                                    io.github.dfauth.embedded.kafka.FavouriteColour$LogicalTypeFactoryAndConversion
+                                    io.github.dfauth.embedded.kafka.test.FavouriteColour$LogicalTypeFactoryAndConversion
                                 </conversion>
                             </customConversions>
                             <customLogicalTypeFactories>
                                 <customLogicalTypeFactory>
-                                    io.github.dfauth.embedded.kafka.FavouriteColour$LogicalTypeFactoryAndConversion
+                                    io.github.dfauth.embedded.kafka.test.FavouriteColour$LogicalTypeFactoryAndConversion
                                 </customLogicalTypeFactory>
                             </customLogicalTypeFactories>
                         </configuration>

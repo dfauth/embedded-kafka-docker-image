@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static io.github.dfauth.embedded.kafka.FavouriteColour.RED;
+import static io.github.dfauth.embedded.kafka.test.FavouriteColour.RED;
 import static io.github.dfauth.embedded.kafka.util.CompletableFutureUtil.onException;
 
 @Slf4j

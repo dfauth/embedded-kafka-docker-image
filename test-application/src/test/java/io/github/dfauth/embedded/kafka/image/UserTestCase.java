@@ -1,6 +1,6 @@
 package io.github.dfauth.embedded.kafka.image;
 
-import io.github.dfauth.embedded.kafka.FavouriteColour;
+import io.github.dfauth.embedded.kafka.test.FavouriteColour;
 import io.github.dfauth.embedded.kafka.image.dispatchable.CreateEvent;
 import io.github.dfauth.embedded.kafka.image.dispatchable.DeleteEvent;
 import io.github.dfauth.embedded.kafka.image.dispatchable.UpdateEvent;
@@ -8,7 +8,7 @@ import io.github.dfauth.embedded.kafka.image.test.User;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-import static io.github.dfauth.embedded.kafka.FavouriteColour.RED;
+import static io.github.dfauth.embedded.kafka.test.FavouriteColour.RED;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j

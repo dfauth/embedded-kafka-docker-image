@@ -18,6 +18,7 @@
     <module>avro-support</module>
     <module>test-application</module>
     <module>embedded-kafka-image</module>
+      <module>test-ref</module>
   </modules>
 
   <properties>

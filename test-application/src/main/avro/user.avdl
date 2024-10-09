@@ -5,6 +5,6 @@ protocol UserProtocol {
   record User {
     long id;
     string userId;
-    @logicalType("io.github.dfauth.embedded.kafka.FavouriteColour") int favoriteColor;
+    @logicalType("io.github.dfauth.embedded.kafka.test.FavouriteColour") int favoriteColor;
   }
 }
