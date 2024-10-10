@@ -1,4 +1,4 @@
-package io.github.dfauth.embedded.kafka.image;
+package io.github.dfauth.embedded.kafka;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;

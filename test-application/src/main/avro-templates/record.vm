@@ -37,7 +37,7 @@ import org.apache.avro.message.SchemaStore;
 @org.apache.avro.specific.AvroGenerated
 public class ${this.mangleTypeIdentifier($schema.getName())} extends ${this.getSchemaParentClass($schema.isError())} implements org.apache.avro.specific.SpecificRecord
 #if ($schema.getNamespace().contains("dispatchable"))
-, io.github.dfauth.embedded.kafka.image.Dispatchable
+, io.github.dfauth.embedded.kafka.Dispatchable
 #end
  {
   private static final long serialVersionUID = ${this.fingerprint64($schema)}L;

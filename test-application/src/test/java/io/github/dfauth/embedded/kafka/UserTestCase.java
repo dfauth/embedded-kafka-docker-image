@@ -1,10 +1,9 @@
-package io.github.dfauth.embedded.kafka.image;
+package io.github.dfauth.embedded.kafka;
 
+import io.github.dfauth.embedded.kafka.dispatchable.DeleteEvent;
+import io.github.dfauth.embedded.kafka.dispatchable.UpdateEvent;
 import io.github.dfauth.embedded.kafka.test.FavouriteColour;
-import io.github.dfauth.embedded.kafka.image.dispatchable.CreateEvent;
-import io.github.dfauth.embedded.kafka.image.dispatchable.DeleteEvent;
-import io.github.dfauth.embedded.kafka.image.dispatchable.UpdateEvent;
-import io.github.dfauth.embedded.kafka.image.test.User;
+import io.github.dfauth.embedded.kafka.test.User;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 public class UserTestCase implements Dispatchable.DispatchableHandler {
 
-    private CreateEvent createEvent = null;
     private DeleteEvent deleteEvent = null;
     private UpdateEvent updateEvent = null;
 
@@ -29,16 +27,10 @@ public class UserTestCase implements Dispatchable.DispatchableHandler {
         FavouriteColour colour = user.getFavoriteColor();
         assertEquals(RED, colour);
 
-        Dispatchable dispatchable = io.github.dfauth.embedded.kafka.image.dispatchable.CreateEvent.newBuilder().setUser(user).build();
+        Dispatchable dispatchable = io.github.dfauth.embedded.kafka.dispatchable.UpdateEvent.newBuilder().setPayload(user).build();
         dispatchable.dispatch(this);
-        assertNotNull(createEvent);
-        assertNull(updateEvent);
+        assertNotNull(updateEvent);
         assertNull(deleteEvent);
-    }
-
-    @Override
-    public void handle(CreateEvent e) {
-        createEvent = e;
     }
 
     @Override

@@ -1,8 +1,8 @@
-package io.github.dfauth.embedded.kafka.image;
+package io.github.dfauth.embedded.kafka;
 
 import io.apicurio.registry.serde.avro.AvroKafkaDeserializer;
 import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
-import io.github.dfauth.embedded.kafka.image.test.User;
+import io.github.dfauth.embedded.kafka.test.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serializer;
@@ -67,7 +67,7 @@ public class ApicurioAvroConfig {
     }
 
     @Bean
-    public Receiver<Integer,io.github.dfauth.embedded.kafka.image.test.User> receiverBean() {
+    public Receiver<Integer,io.github.dfauth.embedded.kafka.test.User> receiverBean() {
         return new Receiver<>();
     }
 

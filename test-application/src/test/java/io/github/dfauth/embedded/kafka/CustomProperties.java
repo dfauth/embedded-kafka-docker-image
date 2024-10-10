@@ -1,4 +1,4 @@
-package io.github.dfauth.embedded.kafka.image;
+package io.github.dfauth.embedded.kafka;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;

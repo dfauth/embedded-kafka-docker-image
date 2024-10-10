@@ -1,5 +1,6 @@
-package io.github.dfauth.embedded.kafka.image;
+package io.github.dfauth.embedded.kafka;
 
+import io.github.dfauth.embedded.kafka.Receiver;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serializer;

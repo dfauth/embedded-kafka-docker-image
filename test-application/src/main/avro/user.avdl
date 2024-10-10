@@ -1,4 +1,4 @@
-@namespace("io.github.dfauth.embedded.kafka.image.test")
+@namespace("io.github.dfauth.embedded.kafka.test")
 
 protocol UserProtocol {
 

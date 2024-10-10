@@ -1,6 +1,6 @@
-package io.github.dfauth.embedded.kafka.image;
+package io.github.dfauth.embedded.kafka;
 
-import io.github.dfauth.embedded.kafka.image.test.User;
+import io.github.dfauth.embedded.kafka.test.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.junit.jupiter.api.Disabled;
@@ -43,7 +43,7 @@ public class ApicurioTestCase {
     @Disabled
     public void testIt() {
         try {
-            io.github.dfauth.embedded.kafka.image.test.User user = io.github.dfauth.embedded.kafka.image.test.User.newBuilder()
+            io.github.dfauth.embedded.kafka.test.User user = io.github.dfauth.embedded.kafka.test.User.newBuilder()
                     .setId(0)
                     .setUserId("fred")
                     .setFavoriteColor(RED)
