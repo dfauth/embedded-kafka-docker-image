@@ -26,7 +26,7 @@ public class ConsumerConfig {
     private String groupId;
 
     @Bean
-    public <K,V> ConsumerFactory<K, V> consumerFactory(@Qualifier("key.deserializer") Supplier<Deserializer<K>> serializer, @Qualifier("value.deserializer") Supplier<Deserializer<V>> deserializer) {
+    public <K,V> ConsumerFactory<K, V> consumerFactory(@Qualifier("key.deserializer") Supplier<Deserializer<K>> keyDeserializer, @Qualifier("value.deserializer") Supplier<Deserializer<V>> valueDeserializer) {
 
         // Creating a Map of string-object pairs
         Map<String, Object> config = new HashMap<>();
@@ -34,7 +34,7 @@ public class ConsumerConfig {
         // Adding the Configuration
         config.put(org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         config.put(org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG, groupId);
-        return new DefaultKafkaConsumerFactory<>(config, serializer, deserializer);
+        return new DefaultKafkaConsumerFactory<>(config, keyDeserializer, valueDeserializer);
     }
 
     // Creating a Listener
