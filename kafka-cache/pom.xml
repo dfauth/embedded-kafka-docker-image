@@ -18,6 +18,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.3.1-jre</version>
+        </dependency>
+        <dependency>
             <groupId>io.github.dfauth.embedded.kafka.image</groupId>
             <artifactId>avro-support</artifactId>
             <version>0.0.1-SNAPSHOT</version>

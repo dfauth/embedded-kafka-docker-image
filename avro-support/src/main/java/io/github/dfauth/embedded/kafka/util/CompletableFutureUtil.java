@@ -44,7 +44,7 @@ public class CompletableFutureUtil {
         };
     }
 
-    public static <T> void onException(CompletableFuture<T> fut, Consumer<Throwable> exceptionHandler) {
-        onException(fut, peekThrowable(exceptionHandler), identity());
+    public static <T> CompletableFuture<T> onException(CompletableFuture<T> fut, Consumer<Throwable> exceptionHandler) {
+        return onException(fut, peekThrowable(exceptionHandler), identity());
     }
 }

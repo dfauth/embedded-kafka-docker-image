@@ -11,6 +11,6 @@ public class KafkaCacheConfig {
 
     @Bean
     public <K,V> KafkaCache<K,V> kafkaCache() {
-        return new KafkaCache<>();
+        return new KafkaCache<>(loader, keyMapper, valueMapper);
     }
 }
