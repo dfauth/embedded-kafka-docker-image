@@ -1,0 +1,11 @@
+networks:
+  bgypsy-network:
+    name: bgypsy
+
+services:
+  kafka:
+    image: apicurio/apicurio-registry-mem:2.6.6.Final
+    ports:
+      - 8080:8080
+
+
