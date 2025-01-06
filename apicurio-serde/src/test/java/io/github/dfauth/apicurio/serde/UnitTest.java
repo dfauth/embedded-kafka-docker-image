@@ -29,12 +29,22 @@ public class UnitTest {
             serde.configure(config, false);
             try(serde) {
                 var serializer = serde.serializer();
+                var deserializer = serde.deserializer();
+
                 var bytes = serializer.serialize(TOPIC, TEST);
                 assertNotNull(bytes);
                 assertTrue(bytes.length > 0);
-                var user = serde.deserializer().deserialize(TOPIC, bytes);
+                var user = deserializer.deserialize(TOPIC, bytes);
                 assertNotNull(user);
                 assertEquals(TEST, user);
+
+                bytes = serializer.serialize(TOPIC, TEST);
+                assertNotNull(bytes);
+                assertTrue(bytes.length > 0);
+                user = deserializer.deserialize(TOPIC, bytes);
+                assertNotNull(user);
+                assertEquals(TEST, user);
+
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);

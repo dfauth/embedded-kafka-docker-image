@@ -1,5 +1,7 @@
 package io.github.dfauth.embedded.kafka.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -10,10 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -22,8 +22,10 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RestController
 public class SchemaRegistryController {
 
-    private int schemaCnt = 0;
-    private final Map<Integer, String> schemas = new HashMap<>();
+    private long schemaCnt = 0;
+    private final Map<Long, MySchema> schemas = new HashMap<>();
+
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     @RequestMapping(value="**",method = {GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS,TRACE})
     public ResponseEntity<Void> all(RequestEntity<Object> request){
@@ -32,94 +34,104 @@ public class SchemaRegistryController {
         return new ResponseEntity(OK);
     }
 
-    @PostMapping(value = "search/versions", consumes = {"application/json"}, produces = {"application/json"})
-    public ResponseEntity<VersionSearchResults> search(
-            @RequestParam("order") String order,
-            @RequestParam("orderby") String orderby,
-            @RequestParam("groupId") String groupId,
-            @RequestParam("artifactId") String artifactId,
-            @RequestParam("canonical") Boolean canonical,
-            @RequestParam("artifactType") String artifactType,
-            @RequestBody String schema) {
-        log.info("WOOZ search: {}",schema);
-        List<SearchedVersion> result = search(schema).map(Map.Entry::getValue).map(SearchedVersion::new).map(List::of).orElse(List.of());
-        return new ResponseEntity(new VersionSearchResults(result.size(), result), OK);
-    }
+//    @PostMapping(value = "search/versions", consumes = {"application/json"}, produces = {"application/json"})
+//    public ResponseEntity<VersionSearchResults> search(
+//            @RequestParam("order") String order,
+//            @RequestParam("orderby") String orderby,
+//            @RequestParam("groupId") String groupId,
+//            @RequestParam("artifactId") String artifactId,
+//            @RequestParam("canonical") Boolean canonical,
+//            @RequestParam("artifactType") String artifactType,
+//            @RequestBody String schema) {
+//        log.info("WOOZ search: {}",schema);
+//        List<SearchedVersion> result = search(schema).map(Map.Entry::getValue).map(SearchedVersion::new).map(List::of).orElse(List.of());
+//        return new ResponseEntity(new VersionSearchResults(result.size(), result), OK);
+//    }
 
-    private Optional<Map.Entry<Integer, String>> search(
+    private Optional<Map.Entry<Long, MySchema>> search(
             @RequestBody String schema) {
         return schemas.entrySet().stream().filter(s -> s.getValue().equals(schema)).findFirst();
     }
 
+    private Function<Object, Optional<Map.Entry<Long, MySchema>>> search() {
+        return schema -> schemas.entrySet().stream().filter(s -> s.getValue().equals(schema)).findFirst();
+    }
+
     // groups/default/artifacts?ifExists=FIND_OR_CREATE_VERSION&canonical=false
-    @PostMapping(value = "groups/{groupId}/artifacts", consumes = {"application/json"}, produces = {"application/json"})
-    public ResponseEntity<CreateArtifactResponse> register(
+    // see https://raw.githubusercontent.com/Apicurio/apicurio-registry/2.6.x/common/src/main/resources/META-INF/openapi.json
+    @PostMapping(value = "/apis/registry/v2/groups/{groupId}/artifacts", consumes = {"application/json"}, produces = {"application/json"})
+    public ResponseEntity<ArtifactMetaData> register(
             @PathVariable("groupId") String groupId,
             @RequestParam("ifExists") Action ifExists,
             @RequestParam("canonical") Boolean canonical,
-            @RequestBody CreateArtifact createArtifact) {
-        log.info("WOOZ register: {}", createArtifact);
-        return search(createArtifact.getFirstVersion().getContent().getContent()).map(e -> {
-            return new ResponseEntity<>(new CreateArtifactResponse(e.getKey(), groupId), OK);
+            @RequestBody MySchema schema) {
+        log.info("WOOZ register: {}", schema);
+        return Optional.ofNullable(schema).flatMap(search()).map(e -> {
+            return new ResponseEntity<>(new ArtifactMetaData(Long.valueOf(e.getKey()),schema.toString()), OK);
         }).orElseGet(() -> {
-            int cnt = schemaCnt++;
-            schemas.put(cnt, createArtifact.getFirstVersion().getContent().getContent());
-            return new ResponseEntity<>(new CreateArtifactResponse(cnt, groupId), OK);
+            var cnt = schemaCnt++;
+            schemas.put(cnt, schema);
+            return new ResponseEntity<>(new ArtifactMetaData(cnt, schema.toString()), OK);
         });
     }
 
-    // {artifactId=test-value,
-    //  artifactType=AVRO,
-    //  firstVersion={
-    //   content={
-    //   content={
-    //     "type":"record",
-    //     "name":"User",
-    //     "namespace":"io.github.dfauth.embedded.kafka.image.test",
-    //     "fields":[{"name":"id","type":"long"},{"name":"userId","type":{"type":"string","avro.java.string":"String"}},{"name":"favoriteColor","type":{"type":"int","logicalType":"io.github.dfauth.embedded.kafka.image.FavouriteColour"}}]
-    //   },
-    //   contentType=application/json}
-    //  }
-    // }
-    @Data
-    @AllArgsConstructor
-    public static class CreateArtifactResponse {
-        private final ArtifactMetaData artifact;
-        private final VersionMetaData version;
+    // http://localhost:8080/apis/registry/v2/ids/globalIds/0
+    @GetMapping(value = "/apis/registry/v2/ids/globalIds/{id}", consumes = {"application/json"}, produces = {"application/json"})
+    public ResponseEntity<MySchema> ids(
+            @PathVariable("id") Long id,
+            @RequestParam("dereference") Boolean dereference) {
+        log.info("WOOZ ids: {}", id);
+        return Optional.ofNullable(schemas.get(id)).map(s -> new ResponseEntity<>(s,OK)).orElse(new ResponseEntity<>(OK));
+    }
 
-        public CreateArtifactResponse(int id, String groupId) {
-            this(new ArtifactMetaData(groupId), new VersionMetaData(id, groupId));
-        }
+    // http://localhost:8080/apis/registry/v2/ids/globalIds/0/references
+    @GetMapping(value = "/apis/registry/v2/ids/globalIds/{id}/references", consumes = {"application/json"}, produces = {"application/json"})
+    public ResponseEntity<MySchema> idsReferences(
+            @PathVariable("id") String id) {
+        log.info("WOOZ ids/references: {}", id);
+        return Optional.ofNullable(schemas.get(id)).map(s -> new ResponseEntity<>(s,OK)).orElse(new ResponseEntity<>(OK));
     }
 
     @Data
     @AllArgsConstructor
     public static class ArtifactMetaData {
-        private final String name;
-        private final String description;
-        private final String owner;
-        private final OffsetDateTime createdOn;
-        private final String modifiedBy;
-        private final OffsetDateTime modifiedOn;
-        private final ArtifactType artifactType;
-        private final String labels;
-        private final String groupId;
-        private final String artifactId;
+        private Long contentId;
+        private String createdBy;
+        private Date createdOn;
+        private String description;
+        private Long globalId;
+        private String groupId;
+        private String id;
+        private List<String> labels = new ArrayList();
+        private String modifiedBy;
+        private Date modifiedOn;
+        private String name;
+        private Map<String, String> properties;
+        private List<ArtifactReference> references = new ArrayList();
+        private ArtifactState state;
+        private String type;
+        private String version;
 
-        public ArtifactMetaData(String groupId) {
-            this(
-                    "name",
-                    "description",
-                    "owner",
-                    OffsetDateTime.now(),
-                    "owner",
-                    OffsetDateTime.now(),
-                    ArtifactType.AVRO,
-                    "labels",
-                    groupId,
-                    "artifactId"
-            );
+        public ArtifactMetaData(long globalId, String string) {
+            this.globalId = globalId;
+            this.contentId = globalId;
         }
+    }
+
+    @Data
+    public static class ArtifactReference {
+        private String groupId;
+        private String artifactId;
+        private String version;
+        private Long globalId;
+        private Long contentId;
+        private String contentHash;
+    }
+
+    public enum ArtifactState {
+        ENABLED,
+        DISABLED,
+        DEPRECATED
     }
 
     @Data
@@ -140,9 +152,9 @@ public class SchemaRegistryController {
         private final String artifactId;
         private final Map<String, Object> additionalData;
 
-        public VersionMetaData(int i, String groupId) {
+        public VersionMetaData(String id, String groupId) {
             this(
-                    String.valueOf(i),
+                    id,
                     "name",
                     "description",
                     "owner",
@@ -205,50 +217,6 @@ public class SchemaRegistryController {
         private String content;
     }
 
-//    @Data
-//    @AllArgsConstructor
-//    @NoArgsConstructor
-//    public static class MySchema {
-//        private String text;
-//    }
-//
-//    @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include= JsonTypeInfo.As.WRAPPER_OBJECT, property="type")
-//    @JsonSubTypes({
-//            @JsonSubTypes.Type(value = SimpleField.class, name="simple"),
-//            @JsonSubTypes.Type(value = ComplexField.class, name="complex")
-//    })
-//    interface Field<T> {
-//        String getName();
-//        T getType();
-//    }
-//    @Data
-//    @AllArgsConstructor
-//    @NoArgsConstructor
-//    public static class SimpleField implements Field<String> {
-//        private String name;
-//        @JsonProperty("type")
-//        private String type;
-//    }
-//
-//    @Data
-//    @AllArgsConstructor
-//    @NoArgsConstructor
-//    public static class ComplexField implements Field<ComplexType> {
-//        private String name;
-//        @JsonProperty("type")
-//        private ComplexType type;
-//    }
-//
-//    @Data
-//    @AllArgsConstructor
-//    @NoArgsConstructor
-//    public static class ComplexType {
-//        private String type;
-//        @JsonProperty("avro.java.string")
-//        private String avroJavaString;
-//        private String logicalType;
-//    }
-
     @AllArgsConstructor
     @Getter
     public static class VersionSearchResults {
@@ -264,36 +232,30 @@ public class SchemaRegistryController {
     }
 
     enum Action {
-        FIND_OR_CREATE_VERSION
+        RETURN_OR_UPDATE
     }
 
     enum ArtifactType {
         AVRO
     }
 
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MySchema {
+        private String type;
+        private String name;
+        private String namespace;
+        private Collection<Map<String, Object>> fields;
+
+        public String toString() {
+            try {
+                return mapper.writeValueAsString(this);
+            } catch (JsonProcessingException e) {
+                log.error(e.getMessage(), e);
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }
 
-/**
-
- request: <POST http://localhost:8090/search/versions?order=desc&orderby=globalId&groupId=default&artifactId=test-value&canonical=true&artifactType=AVRO,
- {type=record, name=User, namespace=io.github.dfauth.embedded.kafka.image.test, fields=[{name=id, type=long}, {name=userId, type={type=string, avro.java.string=String}}, {name=favoriteColor, type={type=int, logicalType=io.github.dfauth.embedded.kafka.image.FavouriteColour}}]},
- [user-agent:"Vert.x-WebClient/4.5.7", accept:"application/json", content-length:"315", host:"localhost:8090", Content-Type:"application/json;charset=UTF-8"]>
-
- request: <POST http://localhost:8090/groups/default/artifacts?ifExists=FIND_OR_CREATE_VERSION&canonical=false,{artifactId=test-value, artifactType=AVRO, firstVersion={content={content={"type":"record","name":"User","namespace":"io.github.dfauth.embedded.kafka.image.test","fields":[{"name":"id","type":"long"},{"name":"userId","type":{"type":"string","avro.java.string":"String"}},{"name":"favoriteColor","type":{"type":"int","logicalType":"io.github.dfauth.embedded.kafka.image.FavouriteColour"}}]}, contentType=application/json}}},[user-agent:"Vert.x-WebClient/4.5.7", accept:"application/json", content-length:"489", host:"localhost:8090", Content-Type:"application/json;charset=UTF-8"]>
- request body: {artifactId=test-value,
-                artifactType=AVRO,
-                firstVersion={
-                  content={
-                     content={
-                        "type":"record",
-                        "name":"User",
-                        "namespace":"io.github.dfauth.embedded.kafka.image.test",
-                        "fields":[{
-                               "name":"id",
-                               "type":"long"
-                             },
-                             { "name":"userId",
-                               "type":{"type":"string","avro.java.string":"String"}},{"name":"favoriteColor","type":{"type":"int","logicalType":"io.github.dfauth.embedded.kafka.image.FavouriteColour"}}]}, contentType=application/json}}}
-
-
- */
