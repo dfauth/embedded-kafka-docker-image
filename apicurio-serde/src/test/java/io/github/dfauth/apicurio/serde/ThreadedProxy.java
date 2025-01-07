@@ -22,8 +22,8 @@ public class ThreadedProxy {
             port = Integer.parseInt(args[0]);
             dest = args[1].split(":");
         } else {
-            port = 8090;
-            dest = new String[]{"localhost", "8080"};
+            port = 8091;
+            dest = new String[]{"localhost", "8090"};
         }
         var ss = new ServerSocket(port);
         while(true) {
